@@ -253,12 +253,12 @@ const getTotalPrice = async (req: Request, res: Response) => {
     const totalPrice = await userServices.getTotalPrice(Number(userId));
 
     res.status(200).json({
-      success: true,
-      message: 'Order fetched successfully!',
-      data: {
-        totalPrice,
-      },
-    });
+      "success": true,
+      "message": "Total price calculated successfully!",
+      "data": {
+          totalPrice
+      }
+  });
   } catch (err) {
     if (err === 'Not Found') {
       res.status(404).json({

@@ -76,6 +76,18 @@ const addNewProduct = async (userId: number, product: IProduct) => {
   );
 };
 
+const getAllOrders = async (userId: number) => {
+  const user = await User.isUserExists(userId);
+
+  if (!user) {
+    return Promise.reject('Not Found');
+  }
+
+  if (!user.orders) return Promise.reject('Orders Undefined');
+
+  return user.orders;
+}
+
 export const userServices = {
   createUser,
   getAllUsers,
@@ -83,4 +95,5 @@ export const userServices = {
   updateSingleUser,
   deleteSingleUser,
   addNewProduct,
+  getAllOrders
 };

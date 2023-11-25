@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
 import { userServices } from './user.service';
-import {userValidationSchema, productValidationSchema} from './user.validation';
+import {
+  userValidationSchema,
+  productValidationSchema,
+} from './user.validation';
 import { ZodError } from 'zod';
 
 const createUser = async (req: Request, res: Response) => {
@@ -22,7 +25,7 @@ const createUser = async (req: Request, res: Response) => {
       res.status(400).json({
         success: false,
         message: 'Your input data is wrong',
-        error: err.errors
+        error: err.errors,
       });
     } else if (err instanceof Error) {
       // common error checking
@@ -96,7 +99,10 @@ const updateSingleUser = async (req: Request, res: Response) => {
     const userData = req.body;
 
     const validatedUserData = userValidationSchema.parse(userData);
-    const user = await userServices.updateSingleUser(Number(userId), validatedUserData);
+    const user = await userServices.updateSingleUser(
+      Number(userId),
+      validatedUserData,
+    );
 
     res.status(200).json({
       success: true,
@@ -111,8 +117,7 @@ const updateSingleUser = async (req: Request, res: Response) => {
         message: 'Your input data is wrong',
         error: err.errors,
       });
-    }
-    else if (err === 'Not Found') {
+    } else if (err === 'Not Found') {
       res.status(404).json({
         success: false,
         message: 'User not found',
@@ -151,8 +156,7 @@ const deleteSingleUser = async (req: Request, res: Response) => {
           description: 'User not found!',
         },
       });
-    }
-    else if (err instanceof Error) {
+    } else if (err instanceof Error) {
       res.status(500).json({
         success: false,
         message: err.message || 'Internal server error',
@@ -170,11 +174,11 @@ const addNewProduct = async (req: Request, res: Response) => {
     await userServices.addNewProduct(Number(userId), validatedProductData);
 
     res.status(200).json({
-      "success": true,
-      "message": "Order created successfully!",
-      "data": null
-  });
-  } catch(err) {
+      success: true,
+      message: 'Order created successfully!',
+      data: null,
+    });
+  } catch (err) {
     if (err === 'Not Found') {
       res.status(404).json({
         success: false,
@@ -191,8 +195,49 @@ const addNewProduct = async (req: Request, res: Response) => {
         error: err.errors,
       });
     } else if (err instanceof Error) {
-      console.log('run')
+      res.status(500).json({
+        success: false,
+        message: err.message || 'Internal server error',
+        data: null,
+      });
+    }
+  }
+};
+
+const getAllOrders = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+
+    const orders = await userServices.getAllOrders(Number(userId));
+
+    res.status(200).json({
+      success: true,
+      message: 'Order fetched successfully!',
+      data: {
+        orders,
+      },
+    });
+  } catch (err) {
+    if (err === 'Not Found') {
       res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    }else if (err === 'Orders Undefined') {
+      res.status(404).json({
+        success: false,
+        message: 'Orders Undefined',
+        error: {
+          code: 404,
+          description: 'Yet, this user does not any order',
+        },
+      });
+    } else if (err instanceof Error) {
+      res.status(500).json({
         success: false,
         message: err.message || 'Internal server error',
         data: null,
@@ -207,5 +252,6 @@ export const userController = {
   getSingleUser,
   updateSingleUser,
   deleteSingleUser,
-  addNewProduct
+  addNewProduct,
+  getAllOrders
 };

@@ -1,4 +1,4 @@
-import { IUser } from './user.interface';
+import { IProduct, IUser } from './user.interface';
 import { User } from './user.model';
 
 const createUser = async (userData: IUser) => {
@@ -32,11 +32,11 @@ const getSingleUser = async (userId: number) => {
   const user = await User.isUserExists(userId);
 
   return user;
-}
+};
 
 const updateSingleUser = async (userId: number, userData: IUser) => {
-  
-  if (!await User.isUserExists(userId)) {// firstly checking user exists or not
+  if (!(await User.isUserExists(userId))) {
+    // firstly checking user exists or not
     return Promise.reject('Not Found');
   }
 
@@ -44,19 +44,43 @@ const updateSingleUser = async (userId: number, userData: IUser) => {
   const updatedUser = await User.updateUserAndGetUpdatedData(userId, userData);
 
   return updatedUser;
-}
+};
 
 const deleteSingleUser = async (userId: number) => {
-  if (!await User.isUserExists(userId)) {
+  if (!(await User.isUserExists(userId))) {
     return Promise.reject('Not Found');
   }
-  await User.deleteOne({userId});
-}
+  await User.deleteOne({ userId });
+};
+
+const addNewProduct = async (userId: number, product: IProduct) => {
+  const user = await User.isUserExists(userId);
+
+  if (!user) {
+    return Promise.reject('Not Found');
+  }
+
+  if (!user.orders) {
+    await User.addOrdersProperty(userId);
+  }
+
+  await User.updateOne(
+    {
+      userId,
+    },
+    {
+      $push: {
+        orders: product,
+      },
+    },
+  );
+};
 
 export const userServices = {
   createUser,
   getAllUsers,
   getSingleUser,
   updateSingleUser,
-  deleteSingleUser
+  deleteSingleUser,
+  addNewProduct,
 };

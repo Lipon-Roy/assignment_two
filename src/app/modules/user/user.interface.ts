@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Model } from "mongoose";
+import { Model } from 'mongoose';
 
 export interface IFullName {
   firstName: string;
@@ -12,7 +12,7 @@ export interface IAddress {
   country: string;
 }
 
-export interface IOrder {
+export interface IProduct {
   productName: string;
   price: number;
   quantity: number;
@@ -28,10 +28,14 @@ export interface IUser {
   isActive: boolean;
   hobbies: string[];
   address: IAddress;
-  orders?: IOrder[];
+  orders?: IProduct[];
 }
 
 export interface UserModel extends Model<IUser> {
   isUserExists(userId: number): Promise<IUser | null>;
-  updateUserAndGetUpdatedData(userId: number, userData: IUser): Promise<IUser | null>;
+  updateUserAndGetUpdatedData(
+    userId: number,
+    userData: IUser,
+  ): Promise<IUser | null>;
+  addOrdersProperty(userId: number): Promise<void>;
 }

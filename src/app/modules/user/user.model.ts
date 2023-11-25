@@ -4,7 +4,7 @@ import {
   IFullName,
   IAddress,
   IUser,
-  IOrder,
+  IProduct,
   UserModel,
 } from './user.interface';
 import config from '../../config';
@@ -45,7 +45,7 @@ const addressSchema = new Schema<IAddress>(
   },
 );
 
-const orderSchema = new Schema<IOrder>(
+const productSchema = new Schema<IProduct>(
   {
     productName: {
       type: String,
@@ -96,7 +96,7 @@ const userSchema = new Schema<IUser, UserModel>({
   hobbies: [String],
   address: addressSchema,
   orders: {
-    type: [orderSchema],
+    type: [productSchema],
     default: undefined,
   },
 });
@@ -124,15 +124,20 @@ userSchema.statics.updateUserAndGetUpdatedData = async function (
   userId: number,
   userData: IUser,
 ): Promise<IUser | null> {
-  
-  await this.updateOne({userId}, userData);
-  
+  await this.updateOne({ userId }, userData);
+
   const result = await User.findOne(
     { userId },
     { _id: 0, password: 0, __v: 0 },
   );
 
   return result;
+};
+
+userSchema.statics.addOrdersProperty = async function (
+  userId: number,
+): Promise<void> {
+  await this.updateOne({ userId }, { orders: [] });
 };
 
 export const User = model<IUser, UserModel>('User', userSchema);

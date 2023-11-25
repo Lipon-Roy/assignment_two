@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { userServices } from './user.service';
-import userValidationSchema from './user.validation';
+import {userValidationSchema, productValidationSchema} from './user.validation';
 import { ZodError } from 'zod';
 
 const createUser = async (req: Request, res: Response) => {
@@ -22,7 +22,7 @@ const createUser = async (req: Request, res: Response) => {
       res.status(400).json({
         success: false,
         message: 'Your input data is wrong',
-        error: err.errors,
+        error: err.errors
       });
     } else if (err instanceof Error) {
       // common error checking
@@ -161,10 +161,51 @@ const deleteSingleUser = async (req: Request, res: Response) => {
   }
 };
 
+const addNewProduct = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const product = req.body;
+
+    const validatedProductData = productValidationSchema.parse(product);
+    await userServices.addNewProduct(Number(userId), validatedProductData);
+
+    res.status(200).json({
+      "success": true,
+      "message": "Order created successfully!",
+      "data": null
+  });
+  } catch(err) {
+    if (err === 'Not Found') {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    } else if (err instanceof ZodError) {
+      res.status(404).json({
+        success: false,
+        message: 'Your input data is wrong',
+        error: err.errors,
+      });
+    } else if (err instanceof Error) {
+      console.log('run')
+      res.status(404).json({
+        success: false,
+        message: err.message || 'Internal server error',
+        data: null,
+      });
+    }
+  }
+};
+
 export const userController = {
   createUser,
   getAllUsers,
   getSingleUser,
   updateSingleUser,
-  deleteSingleUser
+  deleteSingleUser,
+  addNewProduct
 };

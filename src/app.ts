@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import { userRouter } from './app/modules/user/user.route';
 
@@ -20,6 +20,18 @@ app.use((req: Request, res: Response) => {
       description: 'Your requested content was not found',
     },
   });
+});
+
+// error handler
+app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+  if (err instanceof Error) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  } else {
+    next(err);
+  }
 });
 
 export default app;

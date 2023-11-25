@@ -95,7 +95,8 @@ const updateSingleUser = async (req: Request, res: Response) => {
     const userId = req.params.userId;
     const userData = req.body;
 
-    const user = await userServices.updateSingleUser(Number(userId), userData);
+    const validatedUserData = userValidationSchema.parse(userData);
+    const user = await userServices.updateSingleUser(Number(userId), validatedUserData);
 
     res.status(200).json({
       success: true,
@@ -103,7 +104,15 @@ const updateSingleUser = async (req: Request, res: Response) => {
       data: user,
     });
   } catch (err) {
-    if (err === 'Not Found') {
+    // zod error checking
+    if (err instanceof ZodError) {
+      res.status(400).json({
+        success: false,
+        message: 'Your input data is wrong',
+        error: err.errors,
+      });
+    }
+    else if (err === 'Not Found') {
       res.status(404).json({
         success: false,
         message: 'User not found',

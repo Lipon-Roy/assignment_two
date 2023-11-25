@@ -80,12 +80,11 @@ const getSingleUser = async (req: Request, res: Response) => {
           description: 'User not found!',
         },
       });
-    }
-    else if (err instanceof Error) {
+    } else if (err instanceof Error) {
       res.status(404).json({
         success: false,
         message: err.message || 'Internal server error',
-        data: null
+        data: null,
       });
     }
   }
@@ -97,7 +96,7 @@ const updateSingleUser = async (req: Request, res: Response) => {
     const userData = req.body;
 
     const user = await userServices.updateSingleUser(Number(userId), userData);
-    
+
     res.status(200).json({
       success: true,
       message: 'User updated successfully!',
@@ -113,12 +112,41 @@ const updateSingleUser = async (req: Request, res: Response) => {
           description: 'User not found!',
         },
       });
-    }
-    else if (err instanceof Error) {
+    } else if (err instanceof Error) {
       res.status(404).json({
         success: false,
         message: err.message || 'Internal server error',
-        data: null
+        data: null,
+      });
+    }
+  }
+};
+
+const deleteSingleUser = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    await userServices.deleteSingleUser(Number(userId));
+
+    res.status(200).json({
+      success: true,
+      message: 'User deleted successfully!',
+      data: null,
+    });
+  } catch (err) {
+    if (err === 'Not Found') {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    }
+    else if (err instanceof Error) {
+      res.status(500).json({
+        success: false,
+        message: err.message || 'Internal server error',
       });
     }
   }
@@ -128,5 +156,6 @@ export const userController = {
   createUser,
   getAllUsers,
   getSingleUser,
-  updateSingleUser
+  updateSingleUser,
+  deleteSingleUser
 };

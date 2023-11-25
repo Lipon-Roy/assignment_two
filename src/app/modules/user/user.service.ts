@@ -46,9 +46,17 @@ const updateSingleUser = async (userId: number, userData: IUser) => {
   return updatedUser;
 }
 
+const deleteSingleUser = async (userId: number) => {
+  if (!await User.isUserExists(userId)) {
+    return Promise.reject('Not Found');
+  }
+  await User.deleteOne({userId});
+}
+
 export const userServices = {
   createUser,
   getAllUsers,
   getSingleUser,
-  updateSingleUser
+  updateSingleUser,
+  deleteSingleUser
 };

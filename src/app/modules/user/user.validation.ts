@@ -22,13 +22,13 @@ const orderValidationSchema = z.object({
 
 // User validation schema
 const userValidationSchema = z.object({
-  userId: z.number({ required_error: 'User ID is required' }),
-  username: z.string({ required_error: 'Username is required' }),
+  userId: z.number({ required_error: 'Invalid user id' }),
+  username: z.string({ required_error: 'Invalid username' }),
   password: z.string({ required_error: 'Password is required' }),
   fullName: fullNameValidationSchema,
   age: z.number({ required_error: 'Age is required' }),
-  email: z.string({ required_error: 'Email is required' }),
-  isActive: z.boolean({ required_error: 'isActive is required' }),
+  email: z.string({ required_error: 'Email is required' }).email({message: 'Invalid email'}),
+  isActive: z.boolean({ required_error: 'Is active is required' }),
   hobbies: z.array(z.string({ required_error: 'Hobby is required' })),
   address: addressValidationSchema,
   orders: z.array(orderValidationSchema).optional(),

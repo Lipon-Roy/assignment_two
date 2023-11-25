@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Model } from "mongoose";
 
 export interface IFullName {
@@ -31,6 +32,6 @@ export interface IUser {
 }
 
 export interface UserModel extends Model<IUser> {
-  // eslint-disable-next-line no-unused-vars
   isUserExists(userId: number): Promise<IUser | null>;
+  updateUserAndGetUpdatedData(userId: number, userData: IUser): Promise<IUser | null>;
 }

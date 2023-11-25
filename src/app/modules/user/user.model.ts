@@ -112,6 +112,20 @@ userSchema.pre('save', async function (next) {
 userSchema.statics.isUserExists = async function (
   userId: number,
 ): Promise<IUser | null> {
+  const result = await User.findOne(
+    { userId },
+    { _id: 0, password: 0, __v: 0 },
+  );
+
+  return result;
+};
+
+userSchema.statics.updateUserAndGetUpdatedData = async function (
+  userId: number,
+  userData: IUser,
+): Promise<IUser | null> {
+  
+  await this.updateOne({userId}, userData);
   
   const result = await User.findOne(
     { userId },

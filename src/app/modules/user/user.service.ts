@@ -34,8 +34,21 @@ const getSingleUser = async (userId: number) => {
   return user;
 }
 
+const updateSingleUser = async (userId: number, userData: IUser) => {
+  
+  if (!await User.isUserExists(userId)) {// firstly checking user exists or not
+    return Promise.reject('Not Found');
+  }
+
+  // secondly update user and get updated user data
+  const updatedUser = await User.updateUserAndGetUpdatedData(userId, userData);
+
+  return updatedUser;
+}
+
 export const userServices = {
   createUser,
   getAllUsers,
-  getSingleUser
+  getSingleUser,
+  updateSingleUser
 };

@@ -91,8 +91,42 @@ const getSingleUser = async (req: Request, res: Response) => {
   }
 };
 
+const updateSingleUser = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const userData = req.body;
+
+    const user = await userServices.updateSingleUser(Number(userId), userData);
+    
+    res.status(200).json({
+      success: true,
+      message: 'User updated successfully!',
+      data: user,
+    });
+  } catch (err) {
+    if (err === 'Not Found') {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    }
+    else if (err instanceof Error) {
+      res.status(404).json({
+        success: false,
+        message: err.message || 'Internal server error',
+        data: null
+      });
+    }
+  }
+};
+
 export const userController = {
   createUser,
   getAllUsers,
   getSingleUser,
+  updateSingleUser
 };

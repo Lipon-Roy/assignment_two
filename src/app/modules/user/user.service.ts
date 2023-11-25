@@ -88,6 +88,23 @@ const getAllOrders = async (userId: number) => {
   return user.orders;
 }
 
+const getTotalPrice = async (userId: number) => {
+  const user = await User.isUserExists(userId);
+
+  if (!user) {
+    return Promise.reject('Not Found');
+  }
+
+  if (!user.orders) return Promise.reject('Orders Undefined');
+
+  let totalPrice = 0;
+  for (const product of user.orders) {
+    const {price, quantity} = product;
+    totalPrice += (price*quantity);
+  }
+  return Number(totalPrice.toFixed(2));
+}
+
 export const userServices = {
   createUser,
   getAllUsers,
@@ -95,5 +112,6 @@ export const userServices = {
   updateSingleUser,
   deleteSingleUser,
   addNewProduct,
-  getAllOrders
+  getAllOrders,
+  getTotalPrice
 };

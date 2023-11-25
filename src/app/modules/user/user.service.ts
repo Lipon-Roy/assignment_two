@@ -17,6 +17,7 @@ const getAllUsers = async () => {
   const result = await User.find(
     {},
     {
+      _id: 0,
       username: 1,
       fullName: 1,
       age: 1,
@@ -27,7 +28,14 @@ const getAllUsers = async () => {
   return result;
 };
 
+const getSingleUser = async (userId: number) => {
+  const user = await User.isUserExists(userId);
+
+  return user;
+}
+
 export const userServices = {
   createUser,
   getAllUsers,
+  getSingleUser
 };

@@ -1,6 +1,12 @@
 import { Schema, model } from 'mongoose';
-import bcrypt from 'bcrypt' ;
-import { IFullName, IAddress, IUser, IOrder } from './user.interface';
+import bcrypt from 'bcrypt';
+import {
+  IFullName,
+  IAddress,
+  IUser,
+  IOrder,
+  UserModel,
+} from './user.interface';
 import config from '../../config';
 
 const fullNameSchema = new Schema<IFullName>(
@@ -59,7 +65,7 @@ const orderSchema = new Schema<IOrder>(
   },
 );
 
-const userSchema = new Schema<IUser>({
+const userSchema = new Schema<IUser, UserModel>({
   userId: {
     type: Number,
     unique: true,
@@ -95,9 +101,24 @@ const userSchema = new Schema<IUser>({
   },
 });
 
-userSchema.pre('save', async function(next) {
-  this.password = await bcrypt.hash(this.password, Number(config.bcrypt_salt_round));
+userSchema.pre('save', async function (next) {
+  this.password = await bcrypt.hash(
+    this.password,
+    Number(config.bcrypt_salt_round),
+  );
   next();
 });
 
-export const User = model<IUser>('User', userSchema);
+userSchema.statics.isUserExists = async function (
+  userId: number,
+): Promise<IUser | null> {
+  
+  const result = await User.findOne(
+    { userId },
+    { _id: 0, password: 0, __v: 0 },
+  );
+
+  return result;
+};
+
+export const User = model<IUser, UserModel>('User', userSchema);

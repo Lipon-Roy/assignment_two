@@ -61,7 +61,7 @@ const addNewProduct = async (userId: number, product: IProduct) => {
   }
 
   if (!user.orders) {
-    await User.addOrdersProperty(userId);
+    await User.addOrdersProperty(userId);// adding the orders property
   }
 
   await User.updateOne(

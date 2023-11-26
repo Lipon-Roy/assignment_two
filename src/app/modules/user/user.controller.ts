@@ -24,15 +24,15 @@ const createUser = async (req: Request, res: Response) => {
     if (err instanceof ZodError) {
       res.status(400).json({
         success: false,
-        message: 'Your input data is wrong',
+        message: 'Validation error',
         error: err.errors,
       });
     } else if (err instanceof Error) {
       // common error checking
       res.status(500).json({
         success: false,
-        message: err.message || 'Something went wrong',
-        data: null,
+        message: err.message,
+        error: err,
       });
     }
   }
@@ -49,10 +49,10 @@ const getAllUsers = async (req: Request, res: Response) => {
     });
   } catch (err) {
     if (err instanceof Error) {
-      res.status(400).json({
+      res.status(500).json({
         success: false,
         message: err.message,
-        data: null,
+        error: err,
       });
     }
   }
@@ -81,13 +81,13 @@ const getSingleUser = async (req: Request, res: Response) => {
         error: {
           code: 404,
           description: 'User not found!',
-        },
+        }
       });
     } else if (err instanceof Error) {
-      res.status(404).json({
+      res.status(500).json({
         success: false,
-        message: err.message || 'Internal server error',
-        data: null,
+        message: err.message,
+        error: err
       });
     }
   }
@@ -114,7 +114,7 @@ const updateSingleUser = async (req: Request, res: Response) => {
     if (err instanceof ZodError) {
       res.status(400).json({
         success: false,
-        message: 'Your input data is wrong',
+        message: 'Validation error',
         error: err.errors,
       });
     } else if (err === 'Not Found') {
@@ -129,8 +129,8 @@ const updateSingleUser = async (req: Request, res: Response) => {
     } else if (err instanceof Error) {
       res.status(404).json({
         success: false,
-        message: err.message || 'Internal server error',
-        data: null,
+        message: err.message,
+        error: err,
       });
     }
   }
@@ -159,7 +159,8 @@ const deleteSingleUser = async (req: Request, res: Response) => {
     } else if (err instanceof Error) {
       res.status(500).json({
         success: false,
-        message: err.message || 'Internal server error',
+        message: err.message,
+        error: err
       });
     }
   }
@@ -170,8 +171,8 @@ const addNewProduct = async (req: Request, res: Response) => {
     const userId = req.params.userId;
     const product = req.body;
 
-    const validatedProductData = productValidationSchema.parse(product);
-    await userServices.addNewProduct(Number(userId), validatedProductData);
+    const validatedProductData = productValidationSchema.parse(product);// validate the product
+    await userServices.addNewProduct(Number(userId), validatedProductData);// add the validated product into orders array
 
     res.status(200).json({
       success: true,
@@ -189,16 +190,16 @@ const addNewProduct = async (req: Request, res: Response) => {
         },
       });
     } else if (err instanceof ZodError) {
-      res.status(404).json({
+      res.status(400).json({
         success: false,
-        message: 'Your input data is wrong',
+        message: 'Validation error',
         error: err.errors,
       });
     } else if (err instanceof Error) {
       res.status(500).json({
         success: false,
-        message: err.message || 'Internal server error',
-        data: null,
+        message: err.message,
+        error: err
       });
     }
   }
@@ -227,7 +228,7 @@ const getAllOrders = async (req: Request, res: Response) => {
           description: 'User not found!',
         },
       });
-    }else if (err === 'Orders Undefined') {
+    } else if (err === 'Orders Undefined') {
       res.status(404).json({
         success: false,
         message: 'Orders Undefined',
@@ -239,8 +240,8 @@ const getAllOrders = async (req: Request, res: Response) => {
     } else if (err instanceof Error) {
       res.status(500).json({
         success: false,
-        message: err.message || 'Internal server error',
-        data: null,
+        message: err.message,
+        error: err,
       });
     }
   }
@@ -253,12 +254,12 @@ const getTotalPrice = async (req: Request, res: Response) => {
     const totalPrice = await userServices.getTotalPrice(Number(userId));
 
     res.status(200).json({
-      "success": true,
-      "message": "Total price calculated successfully!",
-      "data": {
-          totalPrice
-      }
-  });
+      success: true,
+      message: 'Total price calculated successfully!',
+      data: {
+        totalPrice,
+      },
+    });
   } catch (err) {
     if (err === 'Not Found') {
       res.status(404).json({
@@ -269,7 +270,7 @@ const getTotalPrice = async (req: Request, res: Response) => {
           description: 'User not found!',
         },
       });
-    }else if (err === 'Orders Undefined') {
+    } else if (err === 'Orders Undefined') {
       res.status(404).json({
         success: false,
         message: 'Orders Undefined',
@@ -281,8 +282,8 @@ const getTotalPrice = async (req: Request, res: Response) => {
     } else if (err instanceof Error) {
       res.status(500).json({
         success: false,
-        message: err.message || 'Internal server error',
-        data: null,
+        message: err.message,
+        error: err,
       });
     }
   }
@@ -296,5 +297,5 @@ export const userController = {
   deleteSingleUser,
   addNewProduct,
   getAllOrders,
-  getTotalPrice
+  getTotalPrice,
 };

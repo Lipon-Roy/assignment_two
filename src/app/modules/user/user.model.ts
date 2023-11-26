@@ -112,7 +112,7 @@ userSchema.pre('save', async function (next) {
 userSchema.statics.isUserExists = async function (
   userId: number,
 ): Promise<IUser | null> {
-  const result = await User.findOne(
+  const result = await this.findOne(
     { userId },
     { _id: 0, password: 0, __v: 0 },
   );
@@ -124,9 +124,9 @@ userSchema.statics.updateUserAndGetUpdatedData = async function (
   userId: number,
   userData: IUser,
 ): Promise<IUser | null> {
-  await this.updateOne({ userId }, userData);
+  await this.updateOne({ userId }, userData);// firstly updated the user data
 
-  const result = await User.findOne(
+  const result = await this.findOne(// secondly get updated user data
     { userId },
     { _id: 0, password: 0, __v: 0 },
   );
@@ -137,7 +137,7 @@ userSchema.statics.updateUserAndGetUpdatedData = async function (
 userSchema.statics.addOrdersProperty = async function (
   userId: number,
 ): Promise<void> {
-  await this.updateOne({ userId }, { orders: [] });
+  await this.updateOne({ userId }, { orders: [] });// add orders property with empty array
 };
 
 export const User = model<IUser, UserModel>('User', userSchema);

@@ -2,7 +2,7 @@
 ---
 
 
-### <u>Root Url (METHOD GET):</u> This is root url that response "Hello Assignment Two"
+### <u>Root Url (METHOD GET):</u> This is root url that response {"success": "Hello Assignment Two"}
 - http://localhost:5000
 #
 

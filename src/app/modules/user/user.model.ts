@@ -124,10 +124,24 @@ userSchema.statics.updateUserAndGetUpdatedData = async function (
   userId: number,
   userData: IUser,
 ): Promise<IUser | null> {
-  await this.updateOne({ userId }, userData);// firstly updated the user data
+  
+  // first hashing the password
+  const hashedPassword = await bcrypt.hash(
+    userData.password,
+    Number(config.bcrypt_salt_round),
+  );
 
-  const result = await this.findOne(// secondly get updated user data
-    { userId },
+  userData.password = hashedPassword;// setting hashed password
+  
+  // get updated userId
+  const updatedUserId = userData.userId;
+
+  // secondly updated the user
+  await this.updateOne({ userId }, userData);
+
+  const result = await this.findOne(
+    // thirdly get updated user data
+    { userId: updatedUserId },
     { _id: 0, password: 0, __v: 0 },
   );
 
@@ -137,7 +151,7 @@ userSchema.statics.updateUserAndGetUpdatedData = async function (
 userSchema.statics.addOrdersProperty = async function (
   userId: number,
 ): Promise<void> {
-  await this.updateOne({ userId }, { orders: [] });// add orders property with empty array
+  await this.updateOne({ userId }, { orders: [] }); // add orders property with empty array
 };
 
 export const User = model<IUser, UserModel>('User', userSchema);

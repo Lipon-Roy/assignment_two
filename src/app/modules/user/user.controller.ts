@@ -12,12 +12,12 @@ const createUser = async (req: Request, res: Response) => {
 
     const validatedUserData = userValidationSchema.parse(userData);
 
-    const result = await userServices.createUser(validatedUserData);
+    const createdUser = await userServices.createUser(validatedUserData);
 
     res.status(201).json({
       success: true,
       message: 'User created successfully!',
-      data: result,
+      data: createdUser,
     });
   } catch (err) {
     // zod error checking
@@ -40,12 +40,12 @@ const createUser = async (req: Request, res: Response) => {
 
 const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const result = await userServices.getAllUsers();
+    const users = await userServices.getAllUsers();
 
     res.status(200).json({
       success: true,
       message: 'Users fetched successfully!',
-      data: result,
+      data: users,
     });
   } catch (err) {
     if (err instanceof Error) {
@@ -99,7 +99,7 @@ const updateSingleUser = async (req: Request, res: Response) => {
     const userData = req.body;
 
     const validatedUserData = userValidationSchema.parse(userData);
-    const user = await userServices.updateSingleUser(
+    const updatedUser = await userServices.updateSingleUser(
       Number(userId),
       validatedUserData,
     );
@@ -107,7 +107,7 @@ const updateSingleUser = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       message: 'User updated successfully!',
-      data: user,
+      data: updatedUser,
     });
   } catch (err) {
     // zod error checking
@@ -127,7 +127,7 @@ const updateSingleUser = async (req: Request, res: Response) => {
         },
       });
     } else if (err instanceof Error) {
-      res.status(404).json({
+      res.status(500).json({
         success: false,
         message: err.message,
         error: err,

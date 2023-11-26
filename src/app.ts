@@ -8,6 +8,9 @@ app.use(express.json()); // request body parser
 app.use(cors());
 
 // application routes
+app.get('/', (req: Request, res: Response) => {
+  res.send("Hello Assignment Two");
+});
 app.use('/api/users', userRouter);
 
 // notFound handler

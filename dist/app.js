@@ -11,7 +11,7 @@ app.use(express_1.default.json()); // request body parser
 app.use((0, cors_1.default)());
 // application routes
 app.get('/', (req, res) => {
-    res.send("Hello Assignment Two");
+    res.status(200).json({ success: "Hello Assignment two" });
 });
 app.use('/api/users', user_route_1.userRouter);
 // notFound handler

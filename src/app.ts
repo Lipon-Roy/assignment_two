@@ -9,7 +9,7 @@ app.use(cors());
 
 // application routes
 app.get('/', (req: Request, res: Response) => {
-  res.json({success: "Hello Assignment two"});
+  res.status(200).json({success: "Hello Assignment two"});
 });
 
 app.use('/api/users', userRouter);
